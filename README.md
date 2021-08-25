@@ -1,19 +1,17 @@
 # vue-shop
 
-## Project setup
+## 项目启动方式
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
+安装: npm install
+启动: npm run serve
+打包: npm run build
 ```
 
-### Compiles and minifies for production
+## 开发命令
+1, cmder快速进入: cdshop
+2. cmder启动:    stvue
 ```
-npm run build
+path: D:\programm_soft_ware\cmder_mini\config
+cdshop = cd H:\myPprogramming\js\vueFormalProject\vue-shop
+stvue  = npm run serve
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
