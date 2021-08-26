@@ -1,14 +1,13 @@
 <template>
 	<div class="index">
 		<h1>Index页</h1>
-
 		<h3 v-on:click="test()">点击</h3>
-
 	</div>
 </template>
 
 
 <script>
+
 
 export default {
 	data() {
@@ -25,6 +24,7 @@ export default {
 
 	//监听
 	watch: {
+
 	},
 
 	//函数
@@ -35,7 +35,9 @@ export default {
 	},
 
 	//组件
-	components: {}
+	components: {
+
+	}
 
 }
 

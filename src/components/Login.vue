@@ -6,12 +6,12 @@
 				<img src="../assets/logo.png" alt="">
 			</div>
 
-			<!-- 表单 https://element-plus.org/#/zh-CN/component/form-->
+			<!-- 表单 https://element-plus.org/#/zh-CN/component/form -->
 			<el-form label-width="0" :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm login-form">
 
 				<!--用户名-->
 				<el-form-item prop="name">
-					<!--input: https://element-plus.org/#/zh-CN/component/input-->
+					<!--input: https://element-plus.org/#/zh-CN/component/input -->
 					<el-input placeholder="用户名" v-model="ruleForm.name">
 						<template #prefix>
 							<i class="el-input__icon el-icon-user"></i>
@@ -43,7 +43,9 @@
 <script>
 import { ElButton } from 'element-plus'
 import { Edit } from '@element-plus/icons'
-import { ElMessage } from 'element-plus'
+import TipMessage from "@/tools/TipMessage";
+import  { get } from '@/request/request'
+
 
 export default {
 	name: "Login",
@@ -72,9 +74,26 @@ export default {
 		onSubmit() {
 			this.$refs.ruleForm.validate((valid) => {
 				if (valid) {
-					this.open1("恭喜您, 登录成功");
+
+					// 1. 将登录成功之后的 token，保存到客户端的 sessionStorage 中
+					//   1.1 项目中出了登录之外的其他API接口，必须在登录之后才能访问
+					//   1.2 token 只应在当前网站打开期间生效，所以将 token 保存在 sessionStorage 中
+					console.log("this.ruleForm :", this.ruleForm);
+
+					//发送get请求
+					get("/", {page:3, per:2})
+						.then( (res) =>{
+							console.log("res :", res);
+						}).catch( (err) =>{
+							console.log("请求错误: ", err);
+					})
+
+					TipMessage.isOK("恭喜您, 登录成功");
+					// 2. 通过编程式导航跳转到后台主页，路由地址是 /home
+					this.route.push("/index");
+
 				} else {
-					console.log('error submit!!');
+					TipMessage.Warning("请输入有效信息");
 					return false;
 				}
 			});
@@ -84,33 +103,10 @@ export default {
 			console.log("取消了");
 			this.ruleForm.name = "";
 			this.ruleForm.password = "";
-
 			this.$refs.ruleForm.resetFields();
-			this.open3("您点击了取消");
-		},
 
-		//Message消息提示: https://element-plus.org/#/zh-CN/component/message
-		open1(mgs="恭喜你, 这是一条成功消息") {
-			ElMessage.success({
-				message: mgs,
-				type: 'success'
-			});
+			TipMessage.Info("您点击了取消");
 		},
-
-		open2(msg="警告哦, 这是一条警告消息") {
-			ElMessage.warning({
-				message: msg,
-				type: 'warning'
-			});
-		},
-
-		open3(msg="注意消息") {
-			ElMessage(msg);
-		},
-
-		open4(msg="错了哦, 这是一条错误消息") {
-			ElMessage.error(msg);
-		}
 
 	},
 
@@ -136,21 +132,6 @@ export default {
 		[Edit.name]: Edit,
 	},
 
-	setup() {
-		return {
-			open() {
-				ElMessage('只是一条消息提示')
-			},
-			openVn() {
-				ElMessage({
-					message: h('p', null, [
-						h('span', null, '内容可以是 '),
-						h('i', { style: 'color: teal' }, 'VNode')
-					])
-				});
-			}
-		}
-	}
 
 }
 

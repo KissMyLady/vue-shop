@@ -8,8 +8,8 @@
 ```
 
 ## 开发命令
-1, cmder快速进入: cdshop
-2. cmder启动:    stvue
+1, 任意路基下启动服务器: stnode 
+2. 任意路径下启动vue:   stvue
 ```
 path: D:\programm_soft_ware\cmder_mini\config
 cdshop = cd H:\myPprogramming\js\vueFormalProject\vue-shop
