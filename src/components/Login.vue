@@ -44,7 +44,7 @@
 import { ElButton } from 'element-plus'
 import { Edit } from '@element-plus/icons'
 import TipMessage from "@/tools/TipMessage";
-import  { get } from '@/request/request'
+import  { get, post } from '@/request/request'
 
 
 export default {
@@ -78,17 +78,37 @@ export default {
 					// 1. 将登录成功之后的 token，保存到客户端的 sessionStorage 中
 					//   1.1 项目中出了登录之外的其他API接口，必须在登录之后才能访问
 					//   1.2 token 只应在当前网站打开期间生效，所以将 token 保存在 sessionStorage 中
-					console.log("this.ruleForm :", this.ruleForm);
+					// console.log("this.ruleForm :", this.ruleForm);
+					let username = this.ruleForm.name;
+					let pwd = this.ruleForm.password;
+
+					let data = {
+						"username": username,
+						"password": pwd
+					}
 
 					//发送get请求
-					get("/", {page:3, per:2})
+					post("/login", data)
 						.then( (res) =>{
-							console.log("res :", res);
+							let jsonData = JSON.parse(res.request.response);
+							console.log("jsonData :", jsonData);
+
+							if (jsonData.meta.status == 200){
+
+								console.log("token :", jsonData.data.token);
+								window.sessionStorage.setItem('token', jsonData.data.token)
+								TipMessage.isOK("登录成功");
+								this.$router.push("/home");
+							}else {
+								TipMessage.Info(jsonData.meta.msg);
+							}
+
 						}).catch( (err) =>{
-							console.log("请求错误: ", err);
+						TipMessage.Info("对不起, 我们这里出现了点问题");
+							console.log("登录请求错误: ", err);
 					})
 
-					TipMessage.isOK("恭喜您, 登录成功");
+
 					// 2. 通过编程式导航跳转到后台主页，路由地址是 /home
 					this.route.push("/index");
 
@@ -123,6 +143,17 @@ export default {
 			console.log(`改变之前的值: : 改变之后的值: `);
 		}
 	},
+
+	//检测是否登录
+	created() {
+		//从sessionStorage 中获token
+		const token = window.sessionStorage.getItem("token");
+		if (token){
+			this.$router.push("/home");
+		}
+
+	},
+
 
 
 	//组件

@@ -9,14 +9,14 @@ import "./assets/css/global.css"     //全局样式
 import "./assets/font/iconfont.css"  //导入字体图标
 
 
-// const app = createApp(App)
-// app.use(ElementPlus)
-// app.use(router)
-// app.mount('#app')
+const app = createApp(App)
+app.use(ElementPlus)
+app.use(router)
+app.mount('#app')
 
 
 // 原始的启动
-createApp(App)
-	.use(router)
-	.use(ElementPlus)
-	.mount('#app')
+// createApp(App)
+// 	.use(router)
+// 	.use(ElementPlus)
+// 	.mount('#app')
