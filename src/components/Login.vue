@@ -110,7 +110,7 @@ export default {
 
 
 					// 2. 通过编程式导航跳转到后台主页，路由地址是 /home
-					this.route.push("/index");
+					this.route.push("/login");
 
 				} else {
 					TipMessage.Warning("请输入有效信息");

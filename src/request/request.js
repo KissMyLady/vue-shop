@@ -4,20 +4,21 @@
  */
 import axiox from 'axios'
 
-
 const instance = axiox.create({
-	baseURL: "http://127.0.0.1:8888/api/private/v1/",  //baseURL会在发送请求的时候拼接在url参数的前面
+	  baseURL: "http://139.198.178.12:9000/api/private/v1/",  //云服务器
+	//baseURL: "http://192.168.1.11:8888/api/private/v1/",    //R720 ubuntu服务器, stnode 启动
+	//baseURL: "http://127.0.0.1:8888/api/private/v1/",       //T14本地服务器       stnode 启动
 	//baseURL: "https://www.mylady.top",
-	timeout: 3 * 1000,
+	  timeout: 3 * 1000,
 })
-
 
 //全局请求拦截
 //所有的网络请求都会先走这个方法
 // 添加请求拦截器,所有的网络请求都会先走这个方法，我们可以在它里面为请求添加一些自定义的内容
 instance.interceptors.request.use(function (config) {
 	// 在发送请求之前做些什么
-	//config.headers.token='12343'
+	//获取token,添加Authorization字段
+	config.headers.Authorization = window.sessionStorage.getItem("token");
 	return config;
 }, function (error) {
 	// 对请求错误做些什么
@@ -42,6 +43,10 @@ export function get(url, params) {
 
 export function post(url, data) {
 	return instance.post(url, data);
+}
+
+export function postUp(url, data, body) {
+	return instance.post(url, data, body);
 }
 
 export  function del(url) {

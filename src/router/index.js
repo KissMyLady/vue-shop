@@ -2,13 +2,23 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Login from "@/components/Login";
 import Index from "@/components/Index"
 import Home from "@/components/Home";
+import Welcome from "@/components/Welcome";
+import Users from "@/components/user/Users";
 
 
 const routes = [
 
 	{ path: "/login", name: "Login", component: Login},
 	{ path: "/index", name: "Index", component: Index},
-	{ path: "/home",  name: "Home",  component: Home},
+	{ path: "/home",  name: "Home",  component:Home, redirect: "/welcome",
+		children: [
+			{ path: "/welcome", name: "welcome",  component: Welcome},
+			{ path: "/users",   name: "users",    component: Users},
+		]
+	},
+
+
+
 
 	{ path: "/", redirect: "/login"},
 
