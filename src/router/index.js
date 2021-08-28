@@ -10,23 +10,15 @@ const routes = [
 
 	{ path: "/login", name: "Login", component: Login},
 	{ path: "/index", name: "Index", component: Index},
-	{ path: "/home",  name: "Home",  component:Home, redirect: "/welcome",
+	{ path: "/home",  name: "Home",  component:Home, redirect: "/users",
 		children: [
 			{ path: "/welcome", name: "welcome",  component: Welcome},
 			{ path: "/users",   name: "users",    component: Users},
 		]
 	},
 
-
-
-
 	{ path: "/", redirect: "/login"},
 
-	// {
-	//   path: '/about',
-	//   name: 'About',
-	//   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-	// }
 ]
 
 const router = createRouter({
@@ -50,9 +42,6 @@ router.beforeEach((to, from, next) => {
 	//放行
 	next();
 })
-
-
-
 
 
 export default router

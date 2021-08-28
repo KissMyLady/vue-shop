@@ -51,9 +51,12 @@
 					<el-table-column label="操作" width="180px">
 						<template #default="scope">
 							<!-- 修改按钮 -->
-							<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+							<el-button type="primary" icon="el-icon-edit" size="mini"
+									   @click="showEditDialog(scope.row.id)"
+							></el-button>
 							<!-- 删除按钮 -->
-							<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
+							<el-button type="danger" icon="el-icon-delete" size="mini"
+									   @click="removeUserById(scope.row.id)"></el-button>
 							<!-- 分配角色按钮 -->
 							<el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
 								<el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -120,6 +123,38 @@
 			</template>
 		</el-dialog>
 		<!-- 添加用户对话框 结束-->
+
+		<!--修改用户对话框-->
+		<el-dialog title="修改用户"
+				   v-model="editDialogVisible" width="50%"
+				   @close="editDialogClosed">
+
+			<el-form :model="editForm"
+					 :rules="editFormRules"
+					 ref="editFormRef"
+					 label-width="70px">
+
+				<el-form-item label="用户名">
+					<el-input v-model="editForm.username" disabled></el-input>
+				</el-form-item>
+
+				<el-form-item label="邮箱" prop="email">
+					<el-input v-model="editForm.email"></el-input>
+				</el-form-item>
+
+				<el-form-item label="手机" prop="mobile">
+					<el-input v-model="editForm.mobile"></el-input>
+				</el-form-item>
+
+			</el-form>
+
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="editDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="editUserInfo">确 定</el-button>
+			</span>
+
+		</el-dialog>
+
 
 	</div>
 </template>
@@ -200,10 +235,17 @@ export default {
 					{ required: false, message: '请输入用户手机', trigger: 'blur' },
 					{ validator: checkMobile, trigger: 'blur' }
 				]
-
-
 			},
 
+			//修改用户信息, 查询到的用户信息对象
+			editForm: {
+				"id": "",
+				"username": "",
+				"email": "",
+				"mobile": ""
+			},
+
+			editDialogVisible: false,
 			// 修改表单的验证规则对象
 			editFormRules: {
 				email: [
@@ -215,6 +257,7 @@ export default {
 					{ validator: checkMobile, trigger: 'blur' }
 				]
 			},
+
 		};
 	},
 
@@ -226,22 +269,60 @@ export default {
 	//函数
 	methods: {
 
+		// 监听修改用户对话框的关闭事件
+		editDialogClosed() {
+			this.$refs.editFormRef.resetFields()
+		},
+
+		//点击修改按钮, 弹出修改弹出框
+		showEditDialog(id){
+			console.log("传递过来的id是: ", id);
+
+			//Get查询
+			get("/users/"+ id).then((res)=>{
+				console.log("打印请求的数据res: ", res);
+				if (res.data.meta.status == 200){
+					console.log("获取菜单, 请求数据成功, 打印: ", res.data);
+					this.editForm.email = res.data.data.email;
+					this.editForm.username = res.data.data.username;
+					this.editForm.mobile = res.data.data.mobile;
+					this.editForm.id = res.data.data.id;
+					this.editDialogVisible= true;
+				}else{
+					TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
+				}
+
+			}).catch((error)=>{
+				console.log("请求错误, 原因是: ", error);
+			})
+		},
+
+		// 修改用户信息并提交
+		editUserInfo() {
+			let data = {
+				"email": this.editForm.email,
+				"mobile": this.editForm.mobile
+			};
+			put(`/users/${this.editForm.id}`, data).then((res)=>{
+				if (res.data.meta.status == 200){
+					// 关闭, 刷新数据
+					this.editDialogVisible = false
+					this.loadUserData();
+					this.$message.success('更新用户信息成功!')
+				}else{
+					TipMessage.Wrong(res.data.meta.msg);
+				}
+			}).catch((error)=>{
+				console.log("post错误, 原因是: ", error);
+			})
+		},
+
 		//添加用户
 		saveUser(){
-			console.log("点击了确定添加用户按钮");
 			this.addUserDialogVisible = false;
-			console.log("打印表单数据: ", this.ruleForm);
-
-			console.log(" :", this.ruleForm.username);
-			console.log(" :", this.ruleForm.password);
-
 			let data = {
-				"username": this.ruleForm.username,
-				"password": this.ruleForm.password,
-				"email": "",
-				"mobile": ""
-			};
 
+			};
 			let body = {
 				"username": this.ruleForm.username,
 				"password": this.ruleForm.password,
@@ -250,9 +331,7 @@ export default {
 			}
 
 			postUp("/users" , data, body).then((res)=>{
-			    console.log("打印请求的数据res: ", res);
 			    if (res.data.meta.status == 201){
-			        console.log("post数据成功, 打印: ", res.data);
 					TipMessage.isOK("添加用户成功");
 					this.loadUserData();
 			    }else{
@@ -262,12 +341,6 @@ export default {
 			}).catch((error)=>{
 			    console.log("post错误, 原因是: ", error);
 			})
-
-
-
-
-
-
 		},
 
 		//显示对话框
