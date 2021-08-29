@@ -19,3 +19,8 @@ stvue  = npm run serve
 
 ## 单词说明
 - Rights -> 权限    
+
+
+## 数据库分析
+1: 角色权限分析参考文件: https://blog.mylady.top/static/images/qianduan/vue/assets/SQL_analysis-2021-8-29.xlsx    
+
