@@ -45,7 +45,7 @@ import { ElButton } from 'element-plus'
 import { Edit } from '@element-plus/icons'
 import TipMessage from "@/tools/TipMessage";
 import  { get, post } from '@/request/request'
-
+import { defineComponent, ref } from 'vue'
 
 export default {
 	name: "Login",
@@ -65,7 +65,9 @@ export default {
 					{ required: true,  message: '请输入密码', trigger: 'blur' },
 					{ min: 1, max: 25, message: '长度在 1 到 25 个字符', trigger: 'blur' }
 				],
-			}
+			},
+
+			input: ref(''),
 		}
 	},
 

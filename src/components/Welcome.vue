@@ -10,6 +10,8 @@
 
 <script>
 export default {
+	name: "Welcome",
+
 	data() {
 		return {}
 	},

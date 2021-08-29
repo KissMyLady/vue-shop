@@ -43,8 +43,8 @@
 
 							<!-- 二级菜单-->
 							<el-menu-item :index="'/'+ child.path"
-										  @click="saveNavState('/' + child.path)"
-							>
+										  @click="saveNavState('/' + child.path)">
+
 								<i class="el-icon-menu"></i>{{child.authName}}</el-menu-item>
 
 						</el-menu-item-group>
@@ -123,7 +123,6 @@ export default {
 			}).catch((error)=>{
 			    console.log("请求错误, 原因是: ", error);
 			})
-
 		},
 
 		//链接跳转

@@ -10,6 +10,8 @@
 
 
 export default {
+	name: "Index",
+
 	data() {
 		return {
 			title: '组件标题',

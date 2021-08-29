@@ -63,11 +63,8 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-
 				</el-table>
-
 			</template>
-
 		</el-card>
 
 		<!--分页-->
@@ -164,8 +161,12 @@
 import {defineComponent, ref} from 'vue'
 import TipMessage from "@/tools/TipMessage";
 import {get, post, put, del, postUp} from '@/request/request'
+import {ElButton} from "element-plus";
+import {Edit} from "@element-plus/icons";
 
 export default {
+	name: "Users",
+
 	data() {
 
 		// 验证邮箱的规则
@@ -452,7 +453,11 @@ export default {
 	watch: {},
 
 	//组件
-	components: {},
+	components: {
+		ElButton,
+		// 全名
+		[Edit.name]: Edit,
+	},
 
 	setup() {
 		return {
