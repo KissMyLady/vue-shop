@@ -3,6 +3,8 @@ html, body, #app{
     height: 100%;
     margin: 0;
     padding: 0;
+    /*禁止缩小屏幕后, 换行*/
+    min-width: 1366px;
 }
 
 .card-header {

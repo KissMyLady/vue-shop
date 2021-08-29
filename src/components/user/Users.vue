@@ -42,9 +42,10 @@
 
 					<el-table-column label="状态">
 						<template #default="scope">
-							<el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"
-									   @change="userStateChanged(scope.row)"
-							></el-switch>
+							<el-switch v-model="scope.row.mg_state"
+									   active-color="#13ce66"
+									   inactive-color="#ff4949"
+									   @change="userStateChanged(scope.row)"></el-switch>
 						</template>
 					</el-table-column>
 
@@ -58,8 +59,14 @@
 							<el-button type="danger" icon="el-icon-delete" size="mini"
 									   @click="removeUserById(scope.row.id)"></el-button>
 							<!-- 分配角色按钮 -->
-							<el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-								<el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+							<el-tooltip effect="dark"
+										content="分配角色"
+										placement="top"
+										:enterable="false">
+								<el-button type="warning"
+										   icon="el-icon-setting"
+										   size="mini"
+										   @click="distributionRole"></el-button>
 							</el-tooltip>
 						</template>
 					</el-table-column>
@@ -152,6 +159,31 @@
 
 		</el-dialog>
 
+		<!-- 分配角色的对话框 开始-->
+		<el-dialog title="分配角色"
+				   v-model="setRoleDialogVisible"
+				   width="50%"
+				   @close="setRoleDialogClosed"><div>
+
+				<p>当前的用户：{{userInfo.username}}</p>
+				<p>当前的角色：{{userInfo.role_name}}</p>
+				<p>分配新角色：
+					<el-select v-model="selectedRoleId"
+							   placeholder="请选择">
+						<el-option v-for="item in rolesList"
+								   :key="item.id"
+								   :label="item.roleName"
+								   :value="item.id"></el-option>
+					</el-select>
+				</p>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="setRoleDialogVisible=false">取 消</el-button>
+				<el-button type="primary"
+						   @click="saveRoleInfo">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!-- 分配角色的对话框 结束-->
 
 	</div>
 </template>
@@ -204,7 +236,11 @@ export default {
 				"query": ""
 			},
 			total: 0,
-			addUserDialogVisible: false,  //对话框是否显示
+
+			rolesList: [],       // 所有角色的数据列表
+			selectedRoleId: '',  // 已选中的角色Id值
+
+			addUserDialogVisible: false,  //添加用户, 对话框是否显示
 			ruleForm: {
 				username: '',
 				password: "",
@@ -365,6 +401,7 @@ export default {
 			this.queryData.pagesize = newPage
 			this.loadUserData()
 		},
+
 		handleCurrentChange(newPage) {
 			console.log(`当前页: ${newPage}`);
 			this.queryData.pagenum = newPage
@@ -442,6 +479,31 @@ export default {
 				});
 			});
 
+		},
+
+		//分配用户角色
+		distributionRole(){
+			this.userInfo = userInfo
+
+
+			get("/roles" , {}).then((res)=>{
+			    console.log("打印请求的原始res数据: ", res);
+			    if (res.data.meta.status !== 200){
+			        return TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
+			    }
+
+				this.rolesList = res.data.data
+				this.setRoleDialogVisible = true
+			    console.log(": 请求数据成功, 打印: ", res.data);
+			}).catch((error)=>{
+			    console.log("请求错误, 原因是: ", error);
+			})
+		},
+
+		// 监听分配角色对话框的关闭事件
+		setRoleDialogClosed() {
+			this.selectedRoleId = ''
+			this.userInfo = {}
 		},
 
 	},
