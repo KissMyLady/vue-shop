@@ -109,9 +109,9 @@ export default {
 		//获取菜单
 		getSideList(){
 			get("/menus" , {}).then((res)=>{
-			    console.log("打印请求的数据res: ", res);
+			    //console.log("打印请求的数据res: ", res);
 			    if (res.data.meta.status == 200){
-			        console.log("获取菜单, 请求数据成功, 打印: ", res.data);
+			        //console.log("获取菜单, 请求数据成功, 打印: ", res.data);
 					this.menuList = res.data.data;
 			        // for (let item in res.data.data){
 			        // 	console.log("item :", res.data.data[item]);

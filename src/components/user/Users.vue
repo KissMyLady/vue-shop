@@ -281,9 +281,9 @@ export default {
 
 			//Get查询
 			get("/users/"+ id).then((res)=>{
-				console.log("打印请求的数据res: ", res);
+				//console.log("打印请求的数据res: ", res);
 				if (res.data.meta.status == 200){
-					console.log("获取菜单, 请求数据成功, 打印: ", res.data);
+					//console.log("获取菜单, 请求数据成功, 打印: ", res.data);
 					this.editForm.email = res.data.data.email;
 					this.editForm.username = res.data.data.username;
 					this.editForm.mobile = res.data.data.mobile;
