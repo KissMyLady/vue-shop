@@ -66,7 +66,7 @@
 								<el-button type="warning"
 										   icon="el-icon-setting"
 										   size="mini"
-										   @click="distributionRole"></el-button>
+										   @click="distributionRole(scope.row)"></el-button>
 							</el-tooltip>
 						</template>
 					</el-table-column>
@@ -192,7 +192,7 @@
 <script>
 import {defineComponent, ref} from 'vue'
 import TipMessage from "@/tools/TipMessage";
-import {get, post, put, del, postUp} from '@/request/request'
+import {get, post, put, putUp, del, postUp} from '@/request/request'
 import {ElButton} from "element-plus";
 import {Edit} from "@element-plus/icons";
 
@@ -239,7 +239,7 @@ export default {
 
 			rolesList: [],       // 所有角色的数据列表
 			selectedRoleId: '',  // 已选中的角色Id值
-
+			setRoleDialogVisible: false,  //分配角色对话框
 			addUserDialogVisible: false,  //添加用户, 对话框是否显示
 			ruleForm: {
 				username: '',
@@ -313,8 +313,6 @@ export default {
 
 		//点击修改按钮, 弹出修改弹出框
 		showEditDialog(id){
-			console.log("传递过来的id是: ", id);
-
 			//Get查询
 			get("/users/"+ id).then((res)=>{
 				//console.log("打印请求的数据res: ", res);
@@ -357,9 +355,7 @@ export default {
 		//添加用户
 		saveUser(){
 			this.addUserDialogVisible = false;
-			let data = {
-
-			};
+			let data = {};
 			let body = {
 				"username": this.ruleForm.username,
 				"password": this.ruleForm.password,
@@ -413,11 +409,9 @@ export default {
 			let data = this.queryData;
 			get("/users", data).then((res) => {
 				if (res.data.meta.status == 200) {
-					console.log("res.data.data :", res.data.data);
-					console.log(" :",res.data.data.users );
 					this.userList = res.data.data.users;
 					this.total = res.data.data.total;
-					TipMessage.isOK("数据加载完成");
+					//TipMessage.isOK("数据加载完成");
 				} else {
 					TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
 				}
@@ -482,19 +476,14 @@ export default {
 		},
 
 		//分配用户角色
-		distributionRole(){
+		distributionRole(userInfo){
 			this.userInfo = userInfo
-
-
 			get("/roles" , {}).then((res)=>{
-			    console.log("打印请求的原始res数据: ", res);
 			    if (res.data.meta.status !== 200){
 			        return TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
 			    }
-
 				this.rolesList = res.data.data
 				this.setRoleDialogVisible = true
-			    console.log(": 请求数据成功, 打印: ", res.data);
 			}).catch((error)=>{
 			    console.log("请求错误, 原因是: ", error);
 			})
@@ -504,6 +493,35 @@ export default {
 		setRoleDialogClosed() {
 			this.selectedRoleId = ''
 			this.userInfo = {}
+		},
+
+		//用户角色分配
+		saveRoleInfo(){
+			if (!this.selectedRoleId) {
+				return this.$message.error('请选择要分配的角色！')
+			}
+			console.log("打印用户角色id: ", this.selectedRoleId);
+			let data = {
+				"rid": this.selectedRoleId
+			}
+
+			let body = {
+				"rid": this.selectedRoleId
+			}
+
+			//修改数据
+			putUp(`users/${this.userInfo.id}/role` , data, body).then((res)=>{
+			      if (res.data.meta.status !== 200){
+			        return TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
+			    }
+				this.loadUserData();
+				TipMessage.isOK("更新角色权限成功");
+				this.setRoleDialogVisible = false  //关闭用户角色弹出修改框
+
+			}).catch((error)=>{
+			    console.log("post错误, 原因是: ", error);
+			})
+
 		},
 
 	},
@@ -516,19 +534,7 @@ export default {
 
 	//组件
 	components: {
-		ElButton,
-		// 全名
-		[Edit.name]: Edit,
 	},
-
-	setup() {
-		return {
-			input1: ref(''),
-			input2: ref(''),
-			input3: ref(''),
-			select: ref('')
-		}
-	}
 }
 </script>
 

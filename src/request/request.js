@@ -56,3 +56,7 @@ export  function del(url) {
 export  function put(url, data) {
 	return instance.put(url, data);
 }
+
+export  function putUp(url, data, body) {
+	return instance.put(url, data, body);
+}
