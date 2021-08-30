@@ -7,6 +7,14 @@ import Users from "@/components/user/Users";
 import Rights from "@/components/power/Rights";
 import Roles from "@/components/power/Roles";
 
+//Good
+import Add from "@/components/goods/Add"
+import Category from "@/components/goods/Category";
+import List from "@/components/goods/List";
+import ParamsList from "@/components/goods/ParamsList";
+
+import Order from "@/components/order/Order";
+import Report from "@/components/report/Report";
 
 const routes = [
 
@@ -18,6 +26,16 @@ const routes = [
 			{ path: "/users",   name: "users",    component: Users},
 			{ path: "/rights",  name: "rights",   component: Rights},
 			{ path: "/roles",   name: "roles",    component: Roles},
+
+			//Goods
+			{ path: "/goods",   name: "goodsList",    component: List},
+			{ path: "/goods/add",   name: "add",    component: Add},
+			{ path: "/categories",   name: "categories",    component: Category},
+			{ path: "/params",   name: "params",    component: ParamsList},
+
+			{ path: "/order",   name: "order",    component: Order},
+			{ path: "/report",   name: "report",    component: Report},
+
 		]
 	},
 
