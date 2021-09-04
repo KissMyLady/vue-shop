@@ -61,7 +61,7 @@
 										  v-model="scope.row.inputValue"
 										  ref="saveTagInput"
 										  size="small"
-										  @keyup.enter.native="handleInputConfirm(scope.row)"
+										  @keyup.enter="handleInputConfirm(scope.row)"
 										  @blur="handleInputConfirm(scope.row)"></el-input>
 
 								<!-- 添加按钮 -->
@@ -110,13 +110,13 @@
 										closable
 										@close="handleClose(i, scope.row)">{{item}}</el-tag>
 
-								<!-- 输入的文本框 -->
+								<!-- 输入的文本框  @keyup.enter.native="handleInputConfirm(scope.row)" -->
 								<el-input class="input-new-tag"
 										  v-if="scope.row.inputVisible"
 										  v-model="scope.row.inputValue"
 										  ref="saveTagInput"
 										  size="small"
-										  @keyup.enter.native="handleInputConfirm(scope.row)"
+										  @keyup.enter="handleInputConfirm(scope.row)"
 										  @blur="handleInputConfirm(scope.row)"></el-input>
 
 								<!-- 添加按钮 -->
@@ -257,13 +257,10 @@ export default {
 
 		//编辑按钮点击, 展示编辑框出来
 		showEditDialog(attrId){
-			console.log(" :", attrId);
 			get(`categories/${this.cateId}/attributes/${attrId}`, {}).then((res)=>{
-			    console.log("打印请求的原始res数据: ", res);
 			    if (res.data.meta.status !== 200){
 			        return TipMessage.Wrong(res.data.meta.msg);
 			    }
-			    console.log(": 请求数据成功, 打印: ", res.data);
 			    this.editForm = res.data.data;
 			    this.editDialogVisible = true;
 			}).catch((error)=>{
@@ -278,19 +275,15 @@ export default {
 				attr_sel: this.activeName
 			}
 			putUp(`categories/${this.cateId}/attributes/${this.editForm.attr_id}`, data).then((res)=>{
-			    console.log("打印请求的原始res数据: ", res);
 			    if (res.data.meta.status !== 200){
 			        return TipMessage.Wrong(res.data.meta.msg);
 			    }
-			    console.log(": 请求数据成功, 打印: ", res.data);
 			    TipMessage.isOK("修改成功");
 				this.getParamsData()
 				this.editDialogVisible = false
 			}).catch((error)=>{
 			    console.log("请求错误, 原因是: ", error);
 			})
-
-
 		},
 
 		// 重置修改的表单
@@ -300,19 +293,15 @@ export default {
 
 		//删除按钮, 根据Id删除对应的参数项
 		removeParams(attrId){
-			console.log(" :", attrId);
-
 			this.$confirm("此操作将永久删除该项, 是否继续?", '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				type: 'warning'
 			}).then(() => {
 				del(`categories/${this.cateId}/attributes/${attrId}` , {}).then((res)=>{
-				    console.log("打印请求的原始res数据: ", res);
 				    if (res.data.meta.status !== 200){
 				        return TipMessage.Wrong(res.data.meta.msg);
 				    }
-				    console.log(": 请求数据成功, 打印: ", res.data);
 					this.getParamsData();
 				    TipMessage.isOK("删除成功");
 				}).catch((error)=>{
@@ -329,23 +318,66 @@ export default {
 
 		},
 
-		handleClose(){
-
+		//标签删除按钮点击, DEL数据; 删除对应的参数可选项
+		handleClose(i, row){
+			row.attr_vals.splice(i, 1)
+			this.saveAttrVals(row)
 		},
 
-		handleInputConfirm(){
-
+		//将对 attr_vals 的操作，保存到数据库
+		saveAttrVals(row){
+			let data = {
+				attr_name: row.attr_name,
+				attr_sel: row.attr_sel,
+				attr_vals: row.attr_vals.join(' ')
+			};
+			putUp( `categories/${this.cateId}/attributes/${row.attr_id}`, data).then((res)=>{
+			    if (res.data.meta.status !== 200){
+			        return TipMessage.Wrong(res.data.meta.msg);
+			    }
+			    TipMessage.isOK("保存数据成功");
+			}).catch((error)=>{
+			    console.log("请求错误, 原因是: ", error);
+			})
 		},
 
-		showInput(){
+		//文本框失去焦点, 或摁下了 Enter 都会触发
+		handleInputConfirm(row){
+			console.log("文本框失去焦点, 或摁下了 Enter 都会触发");
+			if (row.inputValue.trim().length === 0) {
+				row.inputValue = ''
+				row.inputVisible = false
+				return
+			}
 
+			// 如果没有return，则证明输入的内容，需要做后续处理
+			row.attr_vals.push(row.inputValue.trim())
+			row.inputValue = ''
+			row.inputVisible = false
+
+			// 需要发起请求，保存这次操作
+			this.saveAttrVals(row)
+		},
+
+		//显示Tab添加框
+		showInput(row){
+			row.inputVisible = true
+			// 让文本框自动获得焦点
+			// $nextTick 方法的作用，就是当页面上元素被重新渲染之后，才会指定回调函数中的代码
+			try {
+				this.$nextTick(() => {
+					this.$refs.saveTagInput.$refs.input.focus();
+				});
+				let msg = "这段展开tab添加标签会报错, 应该是vue版本和这个el不太兼容, 参考文档: https://element-plus.gitee.io/#/zh-CN/component/tag";
+				TipMessage.Warning(msg);
+			}catch (e){
+				console.log("打印错误日志: ", e);
+			}
 		},
 
 
 		//Post请求: 点击按钮, 添加参数按钮
 		addParams(){
-			console.log("params: 点击按钮, 添加参数按钮");
-
 			if (this.selectedCateKeys.length !== 3) {
 				TipMessage.Warning("未选择分类添加, 请选择需要添加的分类");
 			}
@@ -358,37 +390,33 @@ export default {
 				};
 				let params = {};
 				postUp(`/categories/${this.cateId}/attributes` , data, params).then((res)=>{
-				    console.log("打印请求的数据res: ", res);
 				      if (res.data.meta.status !== 201){
-				        return TipMessage.Wrong("获取数据列表数失败, 请检查网络是否畅通");
+				        return TipMessage.Wrong("添加失败, 请检查网络是否畅通");
 				    }
-				    console.log(": 请求数据成功, 打印: ", res.data);
 				    TipMessage.isOK("创建成功");
 					this.getParamsData();
 				    this.addDialogVisible = false;
 				}).catch((error)=>{
-				    console.log("post错误, 原因是: ", error);
+				    console.log("Post请求: 点击按钮, 添加参数按钮错误, 原因是: ", error);
 				})
 			})
 
 		},
 
+		// 监听添加对话框的关闭事件
 		addDialogClosed(){
-
+			this.$refs.addFormRef.resetFields()
 		},
-
 
 		//获取商品分类数据
 		getCateList(){
 			get("/categories" , {}).then((res)=>{
-			    console.log("打印请求的原始res数据: ", res);
 			    if (res.data.meta.status !== 200){
 			        return TipMessage.Wrong(res.data.meta.msg);
 			    }
-			    console.log(": 请求数据成功, 打印: ", res.data);
 			    this.catelist = res.data.data;
 			}).catch((error)=>{
-			    console.log("请求错误, 原因是: ", error);
+			    console.log("获取商品分类数据错误, 原因是: ", error);
 			})
 		},
 
@@ -413,11 +441,18 @@ export default {
 				"sel": this.activeName
 			}
 			get( `categories/${this.cateId}/attributes`, data).then((res)=>{
-			    console.log("打印请求的原始res数据: ", res);
 			    if (res.data.meta.status !== 200){
 			        return TipMessage.Wrong(res.data.meta.msg);
 			    }
-			    console.log(": 请求数据成功, 打印: ", res.data);
+
+			    // 根据逗号遍历, 渲染 tab[标签], 逗号分隔; 淡黄色,紫色,宝蓝,红色,肤色,黑色,白色,均码
+				res.data.data.forEach( (item) => {
+					//判断空否, 三元表达式; xxx ? true返回: false返回
+					item.attr_vals = item.attr_vals ? item.attr_vals = item.attr_vals.split(','): [];
+					//控制文本框的显示与隐藏
+					item.inputVisible = false;
+					item.inputVal = "";
+				})
 
 				//参数绑定
 				if (this.activeName === "many"){
@@ -442,9 +477,6 @@ export default {
 			console.log("打印选择tabs标签名称, 并触发get请求查询tabs标签数据 ", this.activeName);
 			this.getParamsData();
 		}
-
-
-
 	},
 
 	//计算属性
@@ -456,7 +488,6 @@ export default {
 			}
 			return false;
 		},
-
 
 		//当前选中三级分类Id
 		cateId(){
@@ -473,7 +504,6 @@ export default {
 			}
 			return '静态属性'
 		}
-
 
 	},
 
