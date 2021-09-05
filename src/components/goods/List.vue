@@ -17,10 +17,11 @@
 							  v-model="queryInfo.query"
 							  clearable
 							  @clear="getGoodsList">
-						<el-button slot="append" icon="el-icon-search"
-								   @click="getGoodsList"></el-button>
 					</el-input>
 				</el-col>
+				<el-button slot="append"
+						   icon="el-icon-search"
+						   @click="getGoodsList"></el-button>
 				<el-col :span="4">
 					<el-button type="primary" @click="goAddpage">添加商品</el-button>
 				</el-col>
@@ -42,8 +43,12 @@
 
 				<el-table-column label="操作" width="130px">
 					<template #default="scope">
-						<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-						<el-button type="danger" icon="el-icon-delete" size="mini"
+						<el-button type="primary"
+								   icon="el-icon-edit"
+								   size="mini"></el-button>
+						<el-button type="danger"
+								   icon="el-icon-delete"
+								   size="mini"
 								   @click="removeById(scope.row.goods_id)"></el-button>
 					</template>
 				</el-table-column>
@@ -155,6 +160,7 @@ export default {
 			this.getGoodsList()
 		},
 
+		//日期格式化
 		dateFormat(originVal){
 			const dt = new Date(originVal)
 
@@ -167,7 +173,11 @@ export default {
 			const ss = (dt.getSeconds() + '').padStart(2, '0')
 
 			return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
-		}
+		},
+
+		//商品删除
+
+
 
 	},
 
