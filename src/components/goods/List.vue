@@ -37,7 +37,7 @@
 				<el-table-column label="商品重量"    prop="goods_weight" width="70px"></el-table-column>
 
 				<el-table-column label="创建时间" prop="add_time" width="140px">
-					<template #default="scope">{{scope.row.add_time}}</template> <!--dateFormat-->
+					<template #default="scope">{{dateFormat(scope.row.add_time)}}</template> <!--dateFormat-->
 				</el-table-column>
 
 				<el-table-column label="操作" width="130px">
@@ -155,16 +155,35 @@ export default {
 			this.getGoodsList()
 		},
 
+		dateFormat(originVal){
+			const dt = new Date(originVal)
+
+			const y = dt.getFullYear()
+			const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+			const d = (dt.getDate() + '').padStart(2, '0')
+
+			const hh = (dt.getHours() + '').padStart(2, '0')
+			const mm = (dt.getMinutes() + '').padStart(2, '0')
+			const ss = (dt.getSeconds() + '').padStart(2, '0')
+
+			return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+		}
+
 	},
 
 	//计算属性
-	computed: {},
+	computed: {
+
+	},
 
 	//监听
 	watch: {},
 
 	//组件
-	components: {}
+	components: {},
+
+	//过滤器
+
 
 }
 </script>
