@@ -163,6 +163,7 @@
 					<el-input v-model="addForm.attr_name"></el-input>
 				</el-form-item>
 			</el-form>
+
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="addDialogVisible=false">取 消</el-button>
 				<el-button type="primary" @click="addParams">确 定</el-button>
@@ -388,6 +389,7 @@ export default {
 					attr_name: this.addForm.attr_name,
 					attr_sel: this.activeName
 				};
+
 				let params = {};
 				postUp(`/categories/${this.cateId}/attributes` , data, params).then((res)=>{
 				      if (res.data.meta.status !== 201){
