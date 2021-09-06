@@ -110,22 +110,18 @@
 					</el-tab-pane>
 
 					<el-tab-pane label="商品内容" name="4">
-						<!-- 富文本编辑器组件 vue3不支持 vue-quill-editor -->
-						<!--<quill-editor v-model="addForm.goods_introduce"></quill-editor>-->
 
-						<!-- 这个富文本使用参考: https://www.icode9.com/content-4-920959.html -->
-						<!-- 参考正式文档: https://www.kancloud.cn/liuwave/quill/1434140
-						@change="onEditorChange($event)"
-						-->
-						<QuillEditor theme="snow"
-									 ref="myQuillEditor"
-									 v-model="content"
-									 :options="editorOption"
-									 @blur="onEditorBlur($event)"
-									 @focus="onEditorFocus($event)"
-									 >
+						<!-- vue3不支持 vue-quill-editor
+						     <quill-editor v-model="addForm.goods_introduce"></quill-editor> -->
 
-						</QuillEditor>
+						<!-- vue3支持的:     https://vueup.github.io/vue-quill/guide/options.html#globaloptions-prop -->
+						<!-- 参考Github回答: https://github.com/vueup/vue-quill/issues/35 -->
+						<quill-editor theme="snow"
+									  ref="myQuillEditor"
+									  v-model:content="content"
+									  content-type="html"
+									  :options="editorOption">
+						</quill-editor>
 
 						<!--添加商品的按钮 -->
 						<el-button type="primary" class="btnAdd" @click="addGoods">添加商品</el-button>
@@ -217,7 +213,7 @@ export default {
 
 			//富文本工具栏ctrl
 			//editor: "",   // 富文本编辑器对象
-			content: "",   // 富文本编辑器默认内容
+			content: "",    // 富文本编辑器默认内容
 			editorOption: { //  富文本编辑器配置
 				modules: {
 					toolbar: [
@@ -245,13 +241,6 @@ export default {
 
 	created() {
 		this.getCateList();
-	},
-
-	props:{
-		'propEditorContent': {
-			type: String,
-			default: `<p></p><p><br></p><ol></ol>`  // 富文本编辑器默认内容
-		}
 	},
 
 	//函数
@@ -358,17 +347,57 @@ export default {
 			console.log("将图片信息对象，push 到pics数组中, 打印this.addForm: ", this.addForm);
 		},
 
-		//添加商品
-		addGoods(event){
-			console.log("添加商品按钮点击: ", this.editor);
-		},
+		//商品上传点击事件
+		addGoods(){
+			this.$refs.addFormRef.validate( (valid)=>{
+				// if (!valid) {
+				// 	return this.$message.error('请填写必要的表单项！')
+				// }
+				// 执行添加的业务逻辑
+				const formData = this.addForm;
+				formData.goods_cat = formData.goods_cat.join(',')
+				formData.goods_introduce = this.content;
 
-		onEditorBlur (editor) {
-			console.log("富文本编辑器 失去焦点事件, editor :", editor);
-		},
+				//处理动态参数
+				this.manyTableData.forEach(item => {
+					const newInfo = {
+						attr_id: item.attr_id,
+						attr_value: item.attr_vals.join(' ')
+					}
+					this.addForm.attrs.push(newInfo)
+				})
 
-		onEditorFocus (editor) {
-			console.log("富文本编辑器 获得焦点事件");
+				//处理静态参数
+				this.onlyTableData.forEach(item => {
+					const newInfo = {
+						attr_id: item.attr_id,
+						attr_value: item.attr_vals
+					}
+					this.addForm.attrs.push(newInfo)
+				})
+				formData.attrs = this.addForm.attrs
+
+				//发起请求
+				let data = {
+					"goods_name":      formData.goods_name,
+					"goods_cat":       formData.goods_cat,
+					"goods_price":     formData.goods_price,
+					"goods_number":    formData.goods_number,
+					"goods_weight":    formData.goods_weight,
+					"goods_introduce": formData.goods_introduce,  //介绍
+					"pics":            formData.pics,			  //上传的图片临时路径(对象)
+					"attrs":           formData.attrs,            //商品的参数(数组), 包含 动态参数 和 静态属性
+				};
+				post("/goods" , data).then((res)=>{
+				    console.log("打印请求的数据res: ", res);
+				      if (res.data.meta.status !== 201){
+				        return TipMessage.Wrong(res.data.meta.msg);
+				    }
+					TipMessage.isOK("商品添加成功");
+				}).catch((error)=>{
+				    console.log("post错误, 原因是: ", error);
+				})
+			});
 		},
 
 	},
@@ -380,10 +409,6 @@ export default {
 				return this.addForm.goods_cat[2]
 			}
 			return null
-		},
-
-		editor() {
-			return this.$refs.myQuillEditor.quill;
 		},
 	},
 
