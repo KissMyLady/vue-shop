@@ -197,6 +197,7 @@
 import TipMessage from "@/tools/TipMessage";
 import {get, post, put, putUp, del, postUp} from '@/request/request'
 
+
 export default {
 	data() {
 		return {
