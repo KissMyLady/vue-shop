@@ -7,15 +7,18 @@ import "./assets/css/global.css"     //全局样式
 import "./assets/font/iconfont.css"  //导入字体图标
 //import TreeTable from 'vue-table-with-tree-grid'
 //import VueQuillEditor from 'vue-quill-editor'  //富文本, 运行依赖: npm install vue-quill-editor --D
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 
 const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
+//app.use(QuillEditor)
 app.mount('#app')
 app.component('QuillEditor', QuillEditor)
 //app.use(TreeTable)       //这个组件仅支持2.0

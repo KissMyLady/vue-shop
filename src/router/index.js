@@ -33,7 +33,7 @@ const routes = [
 			{ path: "/categories",   name: "categories",    component: Category},
 			{ path: "/params",   name: "params",    component: ParamsList},
 
-			{ path: "/order",   name: "order",    component: Order},
+			{ path: "/orders",   name: "orders",    component: Order},
 			{ path: "/report",   name: "report",    component: Report},
 
 		]
