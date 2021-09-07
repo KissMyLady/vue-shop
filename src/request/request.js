@@ -4,6 +4,11 @@
  */
 import axiox from 'axios'
 
+// 导入 NProgress 包对应的JS和CSS npm install nprogress --save
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+
 const instance = axiox.create({
 	  baseURL: "http://139.198.178.12:9000/api/private/v1/",  //云服务器
 	//baseURL: "http://192.168.1.11:8888/api/private/v1/",    //R720 ubuntu服务器, stnode 启动
@@ -17,6 +22,7 @@ const instance = axiox.create({
 // 添加请求拦截器,所有的网络请求都会先走这个方法，我们可以在它里面为请求添加一些自定义的内容
 instance.interceptors.request.use(function (config) {
 	// 在发送请求之前做些什么
+	NProgress.start();
 	//获取token,添加Authorization字段
 	config.headers.Authorization = window.sessionStorage.getItem("token");
 	return config;
@@ -31,6 +37,7 @@ instance.interceptors.request.use(function (config) {
 //404 404 500
 instance.interceptors.response.use(function (response) {
 	// 对响应数据做点什么
+	NProgress.done();
 	return response;
 }, function (error) {
 	// 对响应错误做点什么

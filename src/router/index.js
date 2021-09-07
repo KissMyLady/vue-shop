@@ -28,13 +28,13 @@ const routes = [
 			{ path: "/roles",   name: "roles",    component: Roles},
 
 			//Goods
-			{ path: "/goods",   name: "goodsList",    component: List},
-			{ path: "/goods/add",   name: "add",    component: Add},
-			{ path: "/categories",   name: "categories",    component: Category},
-			{ path: "/params",   name: "params",    component: ParamsList},
+			{ path: "/goods",      name: "goodsList",  component: List},
+			{ path: "/goods/add",  name: "add",        component: Add},
+			{ path: "/categories", name: "categories", component: Category},
+			{ path: "/params",     name: "params",     component: ParamsList},
 
-			{ path: "/orders",   name: "orders",    component: Order},
-			{ path: "/report",   name: "report",    component: Report},
+			{ path: "/orders",    name: "orders",      component: Order},
+			{ path: "/reports",   name: "reports",     component: Report},
 
 		]
 	},
@@ -47,6 +47,11 @@ const router = createRouter({
 	history: createWebHistory(process.env.BASE_URL),
 	routes
 })
+
+
+
+
+
 
 //导航守卫
 router.beforeEach((to, from, next) => {
